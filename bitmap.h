@@ -2,19 +2,19 @@
 	bitmap.h
 	Matthew Kleitz, 2021
 */
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
 
-enum bmp_compression {
+typedef enum {
 	BI_RGB,
 	BI_RLE8,
 	BI_RLE4
-};
+} bmp_compression;
 
 typedef struct {
-
 	// Header - 14 Bytes
 	unsigned char signature[2];
 	unsigned long file_size;
@@ -44,13 +44,62 @@ typedef struct {
 	char* pixel_data;
 } bitmap;
 
+/// <summary>
+/// Loads a Bitmap File.
+/// </summary>
+/// <param name="file_path">File path of the bitmap.</param>
+/// <param name="bmp">Structure to load data into.</param>
 void load_bitmap(const char* file_path, bitmap* bmp);
+
+/// <summary>
+/// Releases allocated bitmap memory.
+/// </summary>
+/// <param name="bmp"></param>
 void free_bitmap(bitmap* bmp);
+
+/// <summary>
+/// Saves a Bitmap file.
+/// </summary>
+/// <param name="file_path">File path to write to.</param>
+/// <param name="bmp">Bitmap data to write.</param>
 void save_bitmap(const char* file_path, bitmap* bmp);
+
+/// <summary>
+/// Prints bitmap information to the console.
+/// </summary>
+/// <param name="bmp"></param>
 void print_bitmap_info(bitmap* bmp);
+
+/// <summary>
+/// Takes a four char buffer and converts it into a long. Uses memcpy.
+/// </summary>
+/// <param name="l">Long pointer to write data into.</param>
+/// <param name="bytes">Bytes that contain long data.</param>
+/// <returns></returns>
 int pack_in_long(unsigned long* l, char bytes[4]);
+
+/// <summary>
+/// Takes a two char buffer and converts it into a short. Uses memcpy.
+/// </summary>
+/// <param name="s">Short pointer to write data into.</param>
+/// <param name="bytes">Bytes that contain short data.</param>
+/// <returns></returns>
 int pack_in_short(unsigned short* s, char bytes[2]);
+
+/// <summary>
+/// Takes a long and converts it into a 4 byte buffer. Little-endian.
+/// </summary>
+/// <param name="b">Buffer to write data.</param>
+/// <param name="l">Long to write.</param>
+/// <returns></returns>
 int unpack_long(char* b, const long l);
+
+/// <summary>
+/// Takes a short and converts it into a 2 byte buffer. Little-endian.
+/// </summary>
+/// <param name="b">Buffer to write data.</param>
+/// <param name="s">Short to write.</param>
+/// <returns></returns>
 int unpack_short(char* b, const short s);
 
 void load_bitmap(const char* file_path, bitmap* bmp) {
@@ -63,7 +112,6 @@ void load_bitmap(const char* file_path, bitmap* bmp) {
 		return;
 	}
 	fgets(hbuf, 54, fp);
-	//fgets(ibuf, 40, (FILE*)fp);
 	
 	// Reading the header
 	bmp->signature[0] = hbuf[0];
@@ -95,27 +143,20 @@ void load_bitmap(const char* file_path, bitmap* bmp) {
 		// Do Stuff
 	}
 	
-	fpos_t pos;
-	fgetpos(fp, &pos);
-	
-
-	fseek(fp, bmp->data_offset, SEEK_SET);
+	// Allocate memory for the pixel data.
 	long n = bmp->image_size;
-
 	char* idata = malloc(n);
-	
 	if (idata == NULL) {
 		printf("Memory Allocation Failed.");
 		return;
 	}
 
+	// Read pixel data
+	fseek(fp, bmp->data_offset, SEEK_SET);
 	size_t len_read = fread(idata, sizeof(char), n, fp);
-
-	
 	bmp->pixel_data = idata;
-	//
+
 	fclose(fp);
-	//free(idata);
 }
 
 void save_bitmap(const char* file_path, bitmap* bmp) {
