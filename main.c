@@ -6,22 +6,25 @@
 
 int main(void) {
 
-	bitmap bmp;
+	time_t t;
+	srand((unsigned)time(&t));
+	
 	vimage image;
-	alloc_image(&image, 480, 480);
-	vfill(&image, vBLUE);
-	for (int i = 1; i < 460; i++) {
-		vdraw(&image, i, 100 + sinf(i) * 3, vRED);
-		vdraw(&image, i, 200 + sinf(i)*3, vGREEN);
+	alloc_image(&image, 1000, 1000);
+	vfill(image, vGUNMETAL);
+	for (int i = 0; i < 5; i++) {
+		vdraw_rect(image, rand() % 900, rand() % 900, 25, 25, vCARMINE);
 	}
+	//vdraw_rect(image, 50, 50, 50, 50, vCLEMENTINE);
+	bitmap bmp;
 	bitmap_from_image(image, &bmp);
-	free_image(image);
-	print_bitmap_info(&bmp);
 	save_bitmap("F:\\Secondary\\Matthew\\C\\art-files\\build\\Debug\\test.bmp", &bmp);
 
+	free_image(image);
+	free_bitmap(bmp);
 	//load_bitmap("F:\\Secondary\\Matthew\\C\\art-files\\build\\Debug\\img.bmp", &bmp);
 	//save_bitmap("F:\\Secondary\\Matthew\\C\\art-files\\build\\Debug\\a2.bmp", &bmp);
-
-	free_bitmap(bmp);
+	
+	
 	return 0;
 }
