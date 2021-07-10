@@ -1,10 +1,15 @@
-# Vino Art Files
+﻿# Vino Art Files
 art-files is a pure C library that provides a simple api for reading, writing, and creating image/audio files.
 
 ## Supported File Types
 | Name | Bit Depths | Compression |
 | ----- | ----- | ----- |
-| Bitmap | 24 | BI_RGB |
+| BMP | 24 | BI_RGB |
+| PNG | 🚧 | 🚧 |
+| JPG | 🚧 | 🚧 |
+| WAV | 🚧 | 🚧 |
+| MP3 | 🚧 | 🚧 |
+| AIF | 🚧 | 🚧 |
 
 ## Example
 ```c
