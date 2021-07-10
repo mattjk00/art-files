@@ -11,7 +11,8 @@ art-files is a pure C library that provides a simple api for reading, writing, a
 | MP3 | 🚧 | 🚧 |
 | AIF | 🚧 | 🚧 |
 
-## Example
+# Examples
+# Load Bitmap
 ```c
 #include "bitmap.h"
 
@@ -19,6 +20,33 @@ int main(void) {
 	bitmap bmp;
 	load_bitmap("example.bmp", &bmp);
 	print_bitmap_info(&bmp);
+
+	free_bitmap(bmp);
+
+	return 0;
+}
+```
+
+# Create Bitmap
+```c
+#include "bitmap.h"
+#include "image.h"
+
+int main(void) {
+	bitmap bmp;
+	vimage image;
+
+	// Allocate memory for 1000x1000 image and fill the background with a solid color.
+	alloc_image(&image, 1000, 1000);
+	vfill(image, vGUNMETAL);
+
+	// Create a Bitmap file from the pixel data and save it.
+	bitmap_from_image(image, &bmp);
+	save_bitmap("test.bmp", &bmp);
+
+	// Free Resources
+	free_image(image);
+	free_bitmap(bmp);
 
 	return 0;
 }
