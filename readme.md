@@ -51,6 +51,8 @@ int main(void) {
 	return 0;
 }
 ```
+vimage is a generic data type for manipulating pixel data. Any supported image file type can then be created from a vimage struct. vimage abstracts the image data from a file type so that
+you can modify and generate images without worrying about a file format.
 
 ## Contributing
 Please feel free to make pull requests. The library is still in its very early stages in is subject to change. Open up an issue if you have any questions or feature suggestions.
