@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include "image.h"
 
 typedef enum {
 	BI_RGB,
@@ -55,7 +56,11 @@ void load_bitmap(const char* file_path, bitmap* bmp);
 /// Releases allocated bitmap memory.
 /// </summary>
 /// <param name="bmp"></param>
-void free_bitmap(bitmap* bmp);
+void free_bitmap(bitmap bmp);
+
+void bitmap_from_image(vimage img, bitmap* bmp);
+void image_from_bitmap(bitmap bmp, vimage* img);
+void set_defaults_bitmap(bitmap* bmp);
 
 /// <summary>
 /// Saves a Bitmap file.
@@ -142,6 +147,11 @@ void load_bitmap(const char* file_path, bitmap* bmp) {
 	if (bmp->has_color_table) {
 		// Do Stuff
 	}
+	else {
+		bmp->tbl_blue = NULL;
+		bmp->tbl_green = NULL;
+		bmp->tbl_red = NULL;
+	}
 	
 	// Allocate memory for the pixel data.
 	long n = bmp->image_size;
@@ -225,8 +235,11 @@ void save_bitmap(const char* file_path, bitmap* bmp) {
 	fclose(fp);
 }
 
-void free_bitmap(bitmap* bmp) {
-	free(bmp->pixel_data);
+void free_bitmap(bitmap bmp) {
+	free(bmp.pixel_data);
+	free(bmp.tbl_blue);
+	free(bmp.tbl_green);
+	free(bmp.tbl_red);
 }
 
 int pack_in_long(unsigned long* l, char bytes[4]) {
@@ -258,4 +271,48 @@ void print_bitmap_info(bitmap* bmp) {
 	printf("Bit Depth: %d\n", bmp->bits_per_pixel);
 	printf("Compression: %d\n", bmp->compression);
 	printf("---END INFO------\n");
+}
+
+void set_defaults_bitmap(bitmap* bmp) {
+	bmp->bits_per_pixel = 24;
+	bmp->data_offset = 54;
+	bmp->planes = 1;
+	bmp->compression = 0;
+	bmp->x_pixels_per_meter = 1;
+	bmp->y_pixels_per_meter = 1;
+	bmp->colors_used = 0;
+	bmp->important_colors = 0;
+	bmp->tbl_blue = NULL;
+	bmp->tbl_green = NULL;
+	bmp->tbl_red = NULL;
+}
+
+void bitmap_from_image(vimage img, bitmap* bmp) {
+	set_defaults_bitmap(bmp);
+	bmp->width = img.width;
+	bmp->height = img.height;
+	int padding = img.width % 4;
+	int n = (img.width + padding) * img.height;
+	int imgsize = n * 3;
+	bmp->pixel_data = malloc(imgsize);
+	char pixbuf[3];
+	for (int y = 0; y < img.height; y++) {
+		int offset = ( y * ((img.width * 3) + padding));
+		for (int i = 0; i < img.width * 3; i += 3) {
+			pack_color(&pixbuf, img.pixels[(offset + i) / 3], BGR);
+			bmp->pixel_data[offset + i] = pixbuf[0];
+			bmp->pixel_data[offset + i + 1] = pixbuf[1];
+			bmp->pixel_data[offset + i + 2] = pixbuf[2];
+		}
+		for (int p = 0; p < padding; p++) {
+			bmp->pixel_data[offset + img.width*3 + p] = 0;
+		}
+	}
+	
+	bmp->image_size = imgsize;
+	bmp->file_size = imgsize + bmp->data_offset;
+}
+
+void image_from_bitmap(bitmap bmp, vimage* img) {
+	// Not Implemented
 }
