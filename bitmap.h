@@ -58,8 +58,24 @@ void load_bitmap(const char* file_path, bitmap* bmp);
 /// <param name="bmp"></param>
 void free_bitmap(bitmap bmp);
 
+/// <summary>
+/// Allocates memory and creates a bitmap file strucutre from given image data.
+/// </summary>
+/// <param name="img">Image data to use.</param>
+/// <param name="bmp">Output bitmap.</param>
 void bitmap_from_image(vimage img, bitmap* bmp);
+
+/// <summary>
+/// Allocates memory and creates a vimage struct from a given bitmap file.
+/// </summary>
+/// <param name="bmp">Bitmap to take data from.</param>
+/// <param name="img">Output image.</param>
 void image_from_bitmap(bitmap bmp, vimage* img);
+
+/// <summary>
+/// Sets default values like bitdepth, compression level, etc. for a bitmap.
+/// </summary>
+/// <param name="bmp">Bitmap to modify.</param>
 void set_defaults_bitmap(bitmap* bmp);
 
 /// <summary>
@@ -291,21 +307,31 @@ void bitmap_from_image(vimage img, bitmap* bmp) {
 	set_defaults_bitmap(bmp);
 	bmp->width = img.width;
 	bmp->height = img.height;
-	int padding = img.width % 4;
+
+	int remainder = img.width % 4;
+	int padding = 4 - remainder;
+
 	int n = (img.width + padding) * img.height;
 	int imgsize = n * 3;
 	bmp->pixel_data = malloc(imgsize);
 	char pixbuf[3];
+
+	int pxp = 0;
+	int bmpxp = 0;
 	for (int y = 0; y < img.height; y++) {
-		int offset = ( y * ((img.width * 3) + padding));
-		for (int i = 0; i < img.width * 3; i += 3) {
-			pack_color(&pixbuf, img.pixels[(offset + i) / 3], BGR);
-			bmp->pixel_data[offset + i] = pixbuf[0];
-			bmp->pixel_data[offset + i + 1] = pixbuf[1];
-			bmp->pixel_data[offset + i + 2] = pixbuf[2];
+		//int offset = ( y * ((img.width + padding) * 3));
+		for (int i = 0; i < img.width; i ++) {
+
+			pack_color(&pixbuf, img.pixels[pxp++], BGR);
+
+			bmp->pixel_data[bmpxp] = pixbuf[0];
+			bmp->pixel_data[bmpxp+1] = pixbuf[1];
+			bmp->pixel_data[bmpxp+2] = pixbuf[2];
+			bmpxp += 3;
 		}
-		for (int p = 0; p < padding; p++) {
-			bmp->pixel_data[offset + img.width*3 + p] = 0;
+		for (int p = 0; p < remainder; p++) {
+			bmp->pixel_data[bmpxp] = 0;
+			bmpxp++;
 		}
 	}
 	
@@ -317,34 +343,22 @@ void image_from_bitmap(bitmap bmp, vimage* img) {
 	alloc_image(img, bmp.width, bmp.height);
 
 	int offset = img->width % 4;
-	int pxp = 0;
+	
 	int n = bmp.width * bmp.height;
 
-	/*char buf[3];
-	int xscan = 0;
-	for (int i = 0; i < n*3; i++) {
-		/*if (i != 0 && xscan >= bmp.width) {
-			printf("Reached end of scanline.");
-			xscan = 0;
-		}
-		if (xscan <= bmp.width && i % 3 == 0) {
-			img->pixels[pxp] = new_color(bmp.pixel_data[i+2], bmp.pixel_data[i+1], bmp.pixel_data[i]);
-			pxp++;
-		}
-		xscan++;
-		if (xscan == bmp.width + offset) {
-			xscan = 0;
-		}
-	}*/
-
+	int pxp = 0; // Image pixel pointer
+	int bmpxp = 0; // Bitmap pixel pointer
 	for (int y = 0; y < bmp.height; y++) {
-		for (int x = 0; x < ( bmp.width * 3); x += 3) {
+		for (int x = 0; x < bmp.width; x ++) {
+			
 			img->pixels[pxp] = new_color(
-				bmp.pixel_data[y * bmp.width*3 + x+2],
-				bmp.pixel_data[y * bmp.width*3 + x + 1],
-				bmp.pixel_data[y * bmp.width*3 + x]
+				bmp.pixel_data[bmpxp + 2],
+				bmp.pixel_data[bmpxp + 1],
+				bmp.pixel_data[bmpxp]
 			);
 			pxp++;
+			bmpxp += 3;
 		}
+		bmpxp += offset;
 	}
 }

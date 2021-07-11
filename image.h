@@ -29,6 +29,11 @@ void vdraw(vimage img, unsigned long x, unsigned long y, vcolor c);
 void vfill(vimage img, vcolor c);
 void vdraw_rect(vimage img, unsigned long x, unsigned long y, unsigned long w, unsigned long h, vcolor c);
 
+vcolor add_colors(vcolor a, vcolor b);
+vcolor mult_colors(vcolor a, vcolor b);
+vcolor div_colors(vcolor a, vcolor b);
+vcolor sub_colors(vcolor a, vcolor b);
+
 /// <summary>
 /// Writes color data to a buffer
 /// </summary>
@@ -96,6 +101,22 @@ void pack_color(char* buf, vcolor c, color_order order) {
 
 vcolor new_color(char r, char g, char b) {
 	return (vcolor){ r, g, b };
+}
+
+vcolor add_colors(vcolor a, vcolor b) {
+	return (vcolor) { a.r + b.r, a.g + b.g, a.b + b.b };
+}
+
+vcolor mult_colors(vcolor a, vcolor b) {
+	return (vcolor) { a.r * b.r, a.g * b.g, a.b * b.b };
+}
+
+vcolor div_colors(vcolor a, vcolor b) {
+	return (vcolor) { a.r/ b.r, a.g/ b.g, a.b/ b.b };
+}
+
+vcolor sub_colors(vcolor a, vcolor b) {
+	return (vcolor) { a.r- b.r, a.g- b.g, a.b- b.b };
 }
 
 const vcolor vBLACK = { 0,0,0 };
