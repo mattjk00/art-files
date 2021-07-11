@@ -314,5 +314,37 @@ void bitmap_from_image(vimage img, bitmap* bmp) {
 }
 
 void image_from_bitmap(bitmap bmp, vimage* img) {
-	// Not Implemented
+	alloc_image(img, bmp.width, bmp.height);
+
+	int offset = img->width % 4;
+	int pxp = 0;
+	int n = bmp.width * bmp.height;
+
+	/*char buf[3];
+	int xscan = 0;
+	for (int i = 0; i < n*3; i++) {
+		/*if (i != 0 && xscan >= bmp.width) {
+			printf("Reached end of scanline.");
+			xscan = 0;
+		}
+		if (xscan <= bmp.width && i % 3 == 0) {
+			img->pixels[pxp] = new_color(bmp.pixel_data[i+2], bmp.pixel_data[i+1], bmp.pixel_data[i]);
+			pxp++;
+		}
+		xscan++;
+		if (xscan == bmp.width + offset) {
+			xscan = 0;
+		}
+	}*/
+
+	for (int y = 0; y < bmp.height; y++) {
+		for (int x = 0; x < ( bmp.width * 3); x += 3) {
+			img->pixels[pxp] = new_color(
+				bmp.pixel_data[y * bmp.width*3 + x+2],
+				bmp.pixel_data[y * bmp.width*3 + x + 1],
+				bmp.pixel_data[y * bmp.width*3 + x]
+			);
+			pxp++;
+		}
+	}
 }
