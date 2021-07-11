@@ -19,7 +19,7 @@ art-files is a pure C library that provides a simple api for reading, writing, a
 int main(void) {
 	bitmap bmp;
 	load_bitmap("example.bmp", &bmp);
-	print_bitmap_info(&bmp);
+	print_bitmap_info(bmp);
 
 	free_bitmap(bmp);
 

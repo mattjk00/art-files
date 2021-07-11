@@ -73,7 +73,7 @@ void save_bitmap(const char* file_path, bitmap* bmp);
 /// Prints bitmap information to the console.
 /// </summary>
 /// <param name="bmp"></param>
-void print_bitmap_info(bitmap* bmp);
+void print_bitmap_info(bitmap bmp);
 
 /// <summary>
 /// Takes a four char buffer and converts it into a long. Uses memcpy.
@@ -264,12 +264,12 @@ int unpack_short(char* b, const short s) {
 	return 0;
 }
 
-void print_bitmap_info(bitmap* bmp) {
+void print_bitmap_info(bitmap bmp) {
 	printf("\n---BMP INFO------\n");
-	printf("File Size: %d bytes\n", bmp->file_size);
-	printf("%dpx * %dpx\n", bmp->width, bmp->height);
-	printf("Bit Depth: %d\n", bmp->bits_per_pixel);
-	printf("Compression: %d\n", bmp->compression);
+	printf("File Size: %d bytes\n", bmp.file_size);
+	printf("%dpx * %dpx\n", bmp.width, bmp.height);
+	printf("Bit Depth: %d\n", bmp.bits_per_pixel);
+	printf("Compression: %d\n", bmp.compression);
 	printf("---END INFO------\n");
 }
 
