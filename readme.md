@@ -7,6 +7,7 @@ art-files is a pure C library that provides a simple api for reading, writing, a
 | BMP | 24 | BI_RGB |
 | PNG | 🚧 | 🚧 |
 | JPG | 🚧 | 🚧 |
+| VINO | 🚧 | 🚧 |
 | WAV | 🚧 | 🚧 |
 | MP3 | 🚧 | 🚧 |
 | AIF | 🚧 | 🚧 |
